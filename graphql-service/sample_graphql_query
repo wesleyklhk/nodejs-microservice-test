@@ -1,0 +1,42 @@
+#####graphql query
+
+query sadas($courseID: Int!,$courseID2: Int! ,$topic: String) {
+    course1: course(id: $courseID) {
+    	__typename
+			...courseFields
+    }
+  
+    course2: course(id: $courseID2) {
+        title
+        author
+    }
+  
+    course2_2: course(id: $courseID2) {
+    	...courseFields
+    }  
+  
+  	courses: courses(topic:$topic ){
+        title
+        author
+    		topic
+    		url
+  	}
+}
+
+fragment courseFields on Course {
+        title
+        author
+        description
+        topic
+        url
+}
+
+
+
+
+#######graphql query params
+{
+  "courseID": 1,
+  "courseID2": 2,
+  "topic": "JavaScript"
+}
