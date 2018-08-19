@@ -1,15 +1,49 @@
 var express = require('express');
 var express_graphql = require('express-graphql');
 var { buildSchema } = require('graphql');
+
+
+var customer_client = require('./customer-service-client');
 // GraphQL schema
 var schema = buildSchema(`
     type Query {
-        message: String
-    }
+        getCustomerById(id: Int!): Customer
+        getCustomers: [Customer]
+    },
+    type Mutation {
+        createCustomer(cust: CustomerInput): Customer
+    },
+    type Customer {
+        id: Int
+        last_name: String
+        first_name: String
+        hkid: String
+    },
+    input CustomerInput {
+        last_name: String
+        first_name: String
+        hkid: String
+    }    
 `);
-// Root resolver
+
+
 var root = {
-    message1: () => 'Hello World!'
+    'getCustomerById': (args) => {
+        var id = args.id;
+        return customer_client.getCustomerById(id).then((cus) => {
+            return cus.data;
+        });
+    },
+    'getCustomers': (args) => {
+        return customer_client.getAllCustomers().then((cus) => {
+            return cus.data;
+        }); 
+    },
+    'createCustomer': (args) => {
+        return customer_client.createCustomer(args.cust).then((cus)=>{
+            return cus.data;
+        });
+    }
 };
 // Create an express server and a GraphQL endpoint
 var app = express();
