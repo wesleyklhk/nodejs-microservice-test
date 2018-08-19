@@ -1,0 +1,52 @@
+################query and mutations
+
+
+query get_tran($tranId: Int!) {
+  tran_with_id: getTransactionById(id: $tranId) {
+    __typename
+    id
+    customer_id
+    amount
+    createdAt
+    updatedAt
+  }
+  all_trans: getTransactions {
+    __typename
+    id
+    customer_id
+    amount
+    createdAt
+    updatedAt
+  }  
+}
+mutation post_tran($newtran: TransactionInput) {
+  new_tran: createTransaction(tran: $newtran){
+    id
+    customer_id
+    amount
+    createdAt
+    updatedAt
+  }
+}
+
+
+###############variables
+{
+  "tranId": 1,
+  "newtran":{
+    "customer_id":2,
+    "amount":22222
+  },
+  "custId": 1,
+  "updcust": {
+    "last_name": "wesdddd",
+    "first_name": "dbest",
+    "hkid": "asd123123"
+  },
+  "newcust": {
+    "last_name": "zxc",
+    "first_name": "asd",
+    "hkid": "v3v22"    
+  },
+  "delCustId": 2
+}
