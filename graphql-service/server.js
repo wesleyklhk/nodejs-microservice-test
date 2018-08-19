@@ -12,6 +12,8 @@ var schema = buildSchema(`
     },
     type Mutation {
         createCustomer(cust: CustomerInput): Customer
+        saveCustomer(id: Int!, cust: CustomerInput): Customer
+        deleteCustomer(id: Int!): Customer
     },
     type Customer {
         id: Int
@@ -43,6 +45,18 @@ var root = {
         return customer_client.createCustomer(args.cust).then((cus)=>{
             return cus.data;
         });
+    },
+    'saveCustomer': (args) => {
+        var id = args.id;
+        return customer_client.saveCustomer(id,args.cust).then((cus)=>{
+            return cus.data;
+        });
+    },
+    'deleteCustomer': (args) => {
+        var id = args.id;
+        return customer_client.deleteCustomer(id).then((cus)=>{
+            return cus.data;
+        });        
     }
 };
 // Create an express server and a GraphQL endpoint

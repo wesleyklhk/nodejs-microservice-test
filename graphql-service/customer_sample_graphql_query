@@ -1,0 +1,50 @@
+################query and mutations
+
+query get_cust($custId: Int!) {
+  customer_with_id: getCustomerById(id: $custId) {
+    __typename
+    last_name
+    first_name
+    hkid
+  }
+  all_customers: getCustomers {
+    __typename
+    last_name
+  }
+}
+mutation post_cust($newcust: CustomerInput) {
+  new_cus: createCustomer(cust: $newcust){
+    last_name
+  }
+}
+
+mutation put_cust($custId:Int!,$updcust: CustomerInput) {
+  save_cus: saveCustomer(id: $custId,cust: $updcust){
+    last_name
+  }  
+}
+
+mutation delete_cust($delCustId: Int!) {
+  del_cus: deleteCustomer(id: $delCustId){
+    last_name
+  }
+  
+}
+
+
+###############variables
+
+{
+  "custId": 1,
+  "updcust": {
+    "last_name": "wesdddd",
+    "first_name": "dbest",
+    "hkid": "asd123123"
+  },
+  "newcust": {
+    "last_name": "zxc",
+    "first_name": "asd",
+    "hkid": "v3v22"    
+  },
+  "delCustId": 2
+}

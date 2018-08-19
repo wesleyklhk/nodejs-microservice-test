@@ -17,5 +17,11 @@ module.exports = {
     },
     'createCustomer': (cust) => {
         return instance.post(``,cust);
+    },
+    'saveCustomer': (id,cust) => {
+        return instance.put(`/${id}`,cust);
+    },
+    'deleteCustomer': (id) => {
+        return instance.delete(`/${id}`);
     }
 };
