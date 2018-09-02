@@ -5,7 +5,8 @@ const Customer = sequelize.define('customer', {
   id: { type: Sequelize.INTEGER, autoIncrement: true,primaryKey: true },
   last_name: { type: Sequelize.STRING },
   first_name: { type: Sequelize.STRING },
-  hkid: { type: Sequelize.STRING }
+  hkid: { type: Sequelize.STRING },
+  balance: { type: Sequelize.INTEGER }
 },{
   tableName: 't_customer',
   // I don't want createdAt

@@ -27,7 +27,9 @@ router.get('/:id', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
     console.log(req.body);
-    Customer.create(req.body).then((cus)=>{
+    let new_customer = Object.assign({},req.body);
+    new_customer['balance'] = 10000;
+    Customer.create(new_customer).then((cus)=>{
         res.status(200);
         res.json(cus);
     });
@@ -46,7 +48,8 @@ router.put('/:id', function(req, res, next) {
         return cus.update({
             last_name: upd_cus.last_name,
             first_name: upd_cus.first_name,
-            hkid: upd_cus.hkid
+            hkid: upd_cus.hkid,
+            balance: upd_cus.balance
         });
     }).then((cus) => {
         console.log('after update');

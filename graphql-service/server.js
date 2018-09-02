@@ -2,6 +2,8 @@ var express = require('express');
 var express_graphql = require('express-graphql');
 var { buildSchema,GraphQLScalarType } = require('graphql');
 var { Kind } = require('graphql/language');
+const cors = require('cors');
+
 // import { GraphQLScalarType } from 'graphql';
 // import { Kind } from 'graphql/language';
 
@@ -43,13 +45,14 @@ var schema = buildSchema(`
         saveCustomer(id: Int!, cust: CustomerInput): Customer
         deleteCustomer(id: Int!): Customer
 
-        createTransaction(tran: TransactionInput): Transaction
+        createTransaction(tran: TransactionInput): TransactionOperationOutput
     },
     type Customer {
         id: Int
         last_name: String
         first_name: String
         hkid: String
+        balance: Int
     },
     input CustomerInput {
         last_name: String
@@ -66,6 +69,11 @@ var schema = buildSchema(`
     input TransactionInput {
         customer_id: Int
         amount: Int
+    },
+    type TransactionOperationOutput {
+        status: String
+        transaction: Transaction
+        customer: Customer
     }
 `);
 
@@ -112,13 +120,41 @@ var root = {
         }); 
     },
     'createTransaction': (args) => {
-        return transaction_client.createTransaction(args.tran).then((cus)=>{
-            return cus.data;
+        let tran = args.tran;
+        let transactionOperationOutput = {'status': 'FAIL','transaction':null,'customer':null};
+        return customer_client.getCustomerById(tran.customer_id).then((cus) => {
+            let customer = cus.data;
+            let balance = customer.balance;
+            let new_balance = balance + tran.amount;
+            if (new_balance >= 0){
+                customer.balance = new_balance;
+                return customer_client.saveCustomer(tran.customer_id,customer);
+            }
+            throw new Error('negative balance is not allowed');
+        }).then((upd_cus)=>{
+            console.log('going to create new transaction');
+            transactionOperationOutput.customer = upd_cus.data;
+            return transaction_client.createTransaction(tran);
+        },(error)=>{
+            console.log('reject');
+            return Promise.reject(transactionOperationOutput);
+            // return transactionOperationOutput;
+        }).then((cus_tran)=>{
+            console.log('everything good');
+            transactionOperationOutput.status = 'SUCCESS';
+            transactionOperationOutput.transaction = cus_tran.data;
+            return Promise.resolve(transactionOperationOutput);
+        }).catch((data)=>{
+            console.log('catch');
+            console.log(data);
+            return data;
         });
     },    
 };
 // Create an express server and a GraphQL endpoint
 var app = express();
+app.use(cors());
+
 app.use('/graphql', express_graphql({
     schema: schema,
     rootValue: root,
